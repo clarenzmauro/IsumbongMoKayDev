@@ -1,3 +1,5 @@
+"use client"
+
 import { Header } from "@/app/components/header"
 import { HeroSection } from "@/app/components/hero-section"
 import { MainBody } from "@/app/components/main-body"
