@@ -45,6 +45,32 @@ export function MainBody() {
       dislikes: 2,
       devsInterested: 5,
     },
+        {
+      title: "Traffic Congestion Near School Zone",
+      description:
+        "Heavy traffic occurs every morning near the local high school. Parents and students are often late. A traffic flow solution would be valuable.",
+      coverImage: "",
+      userName: "Maria Clara",
+      datePosted: "Oct 19, 2025",
+      location: "Manila",
+      tags: ["Transportation", "Community", "Safety"],
+      likes: 18,
+      dislikes: 2,
+      devsInterested: 5,
+    },
+        {
+      title: "Traffic Congestion Near School Zone",
+      description:
+        "Heavy traffic occurs every morning near the local high school. Parents and students are often late. A traffic flow solution would be valuable.",
+      coverImage: "",
+      userName: "Maria Clara",
+      datePosted: "Oct 19, 2025",
+      location: "Manila",
+      tags: ["Transportation", "Community", "Safety"],
+      likes: 18,
+      dislikes: 2,
+      devsInterested: 5,
+    },
   ]
 
   return (
