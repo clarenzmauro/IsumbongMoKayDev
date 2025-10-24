@@ -49,7 +49,7 @@ export function HeroSection() {
       {/* Text Content */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6">
         <h1 className="text-white text-3xl md:text-5xl font-extrabold tracking-wide leading-tight">
-          Help us to Create Solutions, By Voicing out the Problems
+          Help us Create Solutions, By Voicing out the Problems
         </h1>
         <p className="text-gray-200 mt-4 text-lg md:text-2xl font-medium">
           Develop with Purpose, Digitally for the Country

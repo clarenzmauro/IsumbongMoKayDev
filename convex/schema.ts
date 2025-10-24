@@ -49,4 +49,17 @@ export default defineSchema({
     createdAt: v.string(),
   })
     .index("by_problem_user", ["problemId", "userId"]),
+
+  // DISCUSSION COMMENTS
+  problem_discussions: defineTable({
+    problemId: v.id("problems"),
+    userId: v.id("users"),
+    message: v.string(),
+    parentId: v.optional(v.id("problem_discussions")),
+    createdAt: v.string(),
+  })
+    // For fetching all discussions under a problem
+    .index("by_problem", ["problemId"])
+    // For fetching replies to a parent comment
+    .index("by_parent", ["parentId"]),
 });
