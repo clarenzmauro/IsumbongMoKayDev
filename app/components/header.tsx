@@ -7,16 +7,31 @@ import { SyncClerkUser } from "./sync-clerk-user";
 
 export function Header() {
   return (
-    <header className="w-full border-b border-gray-200 py-3 px-3">
+    <header className="w-full border-b border-gray-200 py-2 px-2">
       <div className="flex items-center justify-between">
         {/* Logo */}
-        <div className="relative w-80 h-18">
-          <Image
-            src="/assets/logo/logo-line.png"
-            alt="Isumbong Mo Kay Devi Logo"
-            fill
-            className="object-cover"
-          />
+        <div className="relative h-10 sm:h-16">
+          {/* Desktop Logo */}
+          <div className="hidden sm:block relative w-80 h-full">
+            <Image
+              src="/assets/logo/logo-line.png"
+              alt="Isumbong Mo Kay Devi Logo"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+
+          {/* Mobile Logo */}
+          <div className="block sm:hidden relative w-12 h-12">
+            <Image
+              src="/assets/logo/cropped-transparent.png"
+              alt="Isumbong Mo Kay Devi Logo (Mobile)"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
         </div>
 
         {/* Auth Buttons */}
