@@ -97,3 +97,39 @@ export const getReplies = query({
     return enriched;
   },
 });
+
+/**
+ * 👥 Get all developers interested in a given problem
+ */
+export const getInterestedDevelopers = query({
+  args: { problemId: v.id("problems") },
+  handler: async (ctx, { problemId }) => {
+    // 1️⃣ Fetch interest records
+    const interests = await ctx.db
+      .query("problem_interests")
+      .withIndex("by_problem_user", (q) => q.eq("problemId", problemId))
+      .collect();
+
+    // 2️⃣ Enrich each record with user info
+    const enriched = await Promise.all(
+      interests.map(async (i) => {
+        const user = await ctx.db.get(i.userId);
+        if (!user) return null;
+
+        return {
+          _id: i._id,
+          userId: i.userId,
+          userName:
+            user.username ||
+            `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() ||
+            "Anonymous",
+          userAvatar: user.imageUrl ?? "",
+          createdAt: i.createdAt,
+        };
+      })
+    );
+
+    // 3️⃣ Filter out null users
+    return enriched.filter((x): x is NonNullable<typeof x> => x !== null);
+  },
+});

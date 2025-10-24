@@ -46,6 +46,10 @@ export default function DeveloperCornerClient({ id }: { id: string }) {
   // ✅ Mutation for adding a comment/reply
   const addDiscussion = useMutation(api.functions.discussions.addDiscussion);
 
+  const interestedDevelopers = useQuery(api.functions.discussions.getInterestedDevelopers, {
+  problemId: id as Id<"problems">,
+});
+
   // ✅ Function to fetch replies per comment
   const useReplies = (parentId: Id<"problem_discussions">) =>
     useQuery(api.functions.discussions.getReplies, { parentId });
@@ -206,11 +210,41 @@ export default function DeveloperCornerClient({ id }: { id: string }) {
 
         {/* --- INTERESTED DEVELOPERS (dummy for now) --- */}
         {activeTab === "developers" && (
-          <div className="bg-white rounded-b-2xl shadow-md p-6 border border-t-0 border-gray-100 space-y-6">
-            <h2 className="text-lg font-semibold text-gray-900">Interested Developers</h2>
-            <p className="text-gray-500 text-sm">Coming soon...</p>
-          </div>
-        )}
+  <div className="bg-white rounded-b-2xl shadow-md p-6 border border-t-0 border-gray-100 space-y-6">
+    <h2 className="text-lg font-semibold text-gray-900">Interested Developers</h2>
+
+    {interestedDevelopers === undefined ? (
+      <p className="text-gray-500 text-sm">Loading developers...</p>
+    ) : interestedDevelopers.length === 0 ? (
+      <p className="text-gray-500 text-sm">No developers have shown interest yet.</p>
+    ) : (
+      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {interestedDevelopers.map((dev) => (
+          <li
+            key={dev._id}
+            className="flex items-center gap-3 border border-gray-200 rounded-lg p-3 hover:shadow-sm transition"
+          >
+            <Image
+              src={dev.userAvatar || "https://i.pravatar.cc/40"}
+              alt={dev.userName}
+              width={40}
+              height={40}
+              className="rounded-full"
+              unoptimized
+            />
+            <div>
+              <p className="font-medium text-gray-800">{dev.userName}</p>
+              <p className="text-xs text-gray-500">
+                Joined: {new Date(dev.createdAt).toLocaleDateString()}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+)}
+
       </div>
     </div>
   );
