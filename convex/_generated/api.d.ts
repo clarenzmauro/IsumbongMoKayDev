@@ -9,6 +9,7 @@
  */
 
 import type * as functions_problems from "../functions/problems.js";
+import type * as functions_users from "../functions/users.js";
 
 import type {
   ApiFromModules,
@@ -26,6 +27,7 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   "functions/problems": typeof functions_problems;
+  "functions/users": typeof functions_users;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

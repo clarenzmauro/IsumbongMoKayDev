@@ -2,6 +2,22 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+
+  // USERS
+  users: defineTable({
+    clerkId: v.string(),
+    email: v.string(),
+    firstName: v.optional(v.string()),
+    lastName: v.optional(v.string()),
+    username: v.optional(v.string()),
+    imageUrl: v.optional(v.string()),
+    provider: v.optional(v.string()),
+    createdAt: v.string(),
+  })
+    .index("by_clerkId", ["clerkId"])
+    .index("by_email", ["email"]),
+
+  // PROBLEMS
   problems: defineTable({
     title: v.string(),
     description: v.string(),
@@ -16,9 +32,19 @@ export default defineSchema({
     devsInterested: v.optional(v.number()),
   }),
 
-    problem_reactions: defineTable({
+  // REACTIONS (likes/dislikes)
+  problem_reactions: defineTable({
     problemId: v.id("problems"),
-    userId: v.string(), // or use Auth user id if integrated
+    userId: v.id("users"),
     type: v.union(v.literal("like"), v.literal("dislike")),
-  }),
+  })
+    .index("by_problem_user", ["problemId", "userId"]),
+
+  // DEV INTERESTS (new)
+  problem_interests: defineTable({
+    problemId: v.id("problems"),
+    userId: v.id("users"),
+    createdAt: v.string(),
+  })
+    .index("by_problem_user", ["problemId", "userId"]),
 });

@@ -3,13 +3,14 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { User } from "lucide-react";
 import Image from "next/image";
+import { SyncClerkUser } from "./sync-clerk-user";
 
 export function Header() {
   return (
     <header className="w-full border-b border-gray-200 py-3 px-3">
       <div className="flex items-center justify-between">
         {/* Logo */}
-        <div className="relative w-80 h-18 bg-red-500">
+        <div className="relative w-80 h-18">
           <Image
             src="/assets/logo/logo-line.png"
             alt="Isumbong Mo Kay Devi Logo"
@@ -22,6 +23,7 @@ export function Header() {
         <div>
           {/* When signed in, show user menu */}
           <SignedIn>
+            <SyncClerkUser />
             <UserButton afterSignOutUrl="/" />
           </SignedIn>
 
