@@ -1,23 +1,29 @@
-"use client"
-import Image from "next/image"
-import { useState } from "react"
-import { ThumbsUp, ThumbsDown, Share2, Code2, User } from "lucide-react"
+"use client";
+import Image from "next/image";
+import { useState } from "react";
+import { ThumbsUp, ThumbsDown, Share2, Code2, User } from "lucide-react";
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { useUser } from "@clerk/nextjs";
+import { Id } from "../../convex/_generated/dataModel";
 
 interface ProblemCardProps {
-  title: string
-  description: string
-  coverImage?: string
-  userName?: string
-  userAvatar?: string
-  datePosted: string
-  location: string
-  tags: string[]
-  likes?: number
-  dislikes?: number
-  devsInterested?: number
+  problemId: Id<"problems">;
+  title: string;
+  description: string;
+  coverImage?: string;
+  userName?: string;
+  userAvatar?: string;
+  datePosted: string;
+  location: string;
+  tags: string[];
+  likes?: number;
+  dislikes?: number;
+  devsInterested?: number;
 }
 
 export function ProblemCard({
+  problemId,
   title,
   description,
   coverImage,
@@ -30,31 +36,71 @@ export function ProblemCard({
   dislikes = 0,
   devsInterested = 0,
 }: ProblemCardProps) {
-  const [likeCount, setLikeCount] = useState(likes)
-  const [dislikeCount, setDislikeCount] = useState(dislikes)
-  const [devCount, setDevCount] = useState(devsInterested)
+  const { user } = useUser();
 
-  const handleLike = () => setLikeCount((prev) => prev + 1)
-  const handleDislike = () => setDislikeCount((prev) => prev + 1)
-  const handleDevInterest = () => setDevCount((prev) => prev + 1)
+  // Local UI state
+  const [likeCount, setLikeCount] = useState(likes);
+  const [dislikeCount, setDislikeCount] = useState(dislikes);
+  const [devCount, setDevCount] = useState(devsInterested);
+  const [loading, setLoading] = useState(false);
+
+  // ✅ Convex Mutations
+  const addOrUpdateReaction = useMutation(api.functions.reactions.addOrUpdateReaction);
+  const toggleInterest = useMutation(api.functions.reactions.toggleInterest);
+
+  const handleReaction = async (type: "like" | "dislike") => {
+    if (!user) return alert("Please sign in to react.");
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      const result = await addOrUpdateReaction({ problemId, type });
+
+      // ✅ Adjust frontend counters based on result from backend
+      if (result?.success) {
+        if (type === "like") {
+          setLikeCount(result.likes ?? likeCount);
+          setDislikeCount(result.dislikes ?? dislikeCount);
+        } else {
+          setLikeCount(result.likes ?? likeCount);
+          setDislikeCount(result.dislikes ?? dislikeCount);
+        }
+      }
+    } catch (err) {
+      console.error("Reaction error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDevInterest = async () => {
+    if (!user) return alert("Please sign in to mark interest.");
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      const result = await toggleInterest({ problemId });
+      if (result?.success) {
+        setDevCount(result.devsInterested ?? devCount);
+      }
+    } catch (err) {
+      console.error("Interest toggle error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href)
-    alert("🔗 Link copied to clipboard!")
-  }
+    navigator.clipboard.writeText(window.location.href);
+    alert("🔗 Link copied to clipboard!");
+  };
 
   return (
     <div className="bg-white rounded-2xl shadow-md overflow-hidden w-full max-w-xl border border-gray-100">
       {/* Cover Image */}
       <div className="relative w-full h-56 bg-gray-100">
         {coverImage ? (
-          <Image
-            src={coverImage}
-            alt={title}
-            fill
-            className="object-cover"
-            unoptimized
-          />
+          <Image src={coverImage} alt={title} fill className="object-cover" unoptimized />
         ) : (
           <div className="flex items-center justify-center h-full text-gray-400">
             No Image Available
@@ -69,12 +115,10 @@ export function ProblemCard({
 
         {/* Description */}
         <p className="text-gray-700 text-sm leading-relaxed">
-          {description.length > 160
-            ? description.slice(0, 160) + "..."
-            : description}
+          {description.length > 160 ? description.slice(0, 160) + "..." : description}
         </p>
 
-        {/* User Info, Date, Location */}
+        {/* User Info */}
         <div className="flex items-center justify-between text-sm text-gray-500 pt-2 border-t border-gray-100">
           <div className="flex items-center space-x-2">
             {userAvatar ? (
@@ -120,16 +164,22 @@ export function ProblemCard({
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
           <div className="flex items-center space-x-4">
             <button
-              onClick={handleLike}
-              className="flex items-center space-x-1 text-gray-600 hover:text-blue-600"
+              onClick={() => handleReaction("like")}
+              className={`flex items-center space-x-1 ${
+                loading ? "opacity-50 cursor-not-allowed" : "text-gray-600 hover:text-blue-600"
+              }`}
+              disabled={loading}
             >
               <ThumbsUp size={18} />
               <span>{likeCount}</span>
             </button>
 
             <button
-              onClick={handleDislike}
-              className="flex items-center space-x-1 text-gray-600 hover:text-red-600"
+              onClick={() => handleReaction("dislike")}
+              className={`flex items-center space-x-1 ${
+                loading ? "opacity-50 cursor-not-allowed" : "text-gray-600 hover:text-red-600"
+              }`}
+              disabled={loading}
             >
               <ThumbsDown size={18} />
               <span>{dislikeCount}</span>
@@ -137,7 +187,10 @@ export function ProblemCard({
 
             <button
               onClick={handleDevInterest}
-              className="flex items-center space-x-1 text-gray-600 hover:text-green-600"
+              className={`flex items-center space-x-1 ${
+                loading ? "opacity-50 cursor-not-allowed" : "text-gray-600 hover:text-green-600"
+              }`}
+              disabled={loading}
             >
               <Code2 size={18} />
               <span>{devCount} Devs</span>
@@ -154,5 +207,5 @@ export function ProblemCard({
         </div>
       </div>
     </div>
-  )
+  );
 }

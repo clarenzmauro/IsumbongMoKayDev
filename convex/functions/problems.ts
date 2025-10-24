@@ -24,15 +24,24 @@ export const addProblem = mutation({
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("User not authenticated");
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    if (!user) throw new Error("User not found in database");
 
     const problem = {
-      ...args,
-      userName: identity?.name ?? "Anonymous",
-      userAvatar: identity?.pictureUrl ?? "",
+      userId: user._id,
+      userName: identity.name ?? "Anonymous",
+      userAvatar: identity.pictureUrl ?? "",
       datePosted: new Date().toISOString(),
       likes: 0,
       dislikes: 0,
       devsInterested: 0,
+      ...args,
     };
 
     const id = await ctx.db.insert("problems", problem);

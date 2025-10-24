@@ -47,6 +47,7 @@ export function MainBody() {
           {problems.map((problem, index) => (
             <ProblemCard
               key={index}
+              problemId={problem._id}
               {...problem}
               coverImage={problem.coverImage || placeholderImage}
             />
@@ -56,3 +57,4 @@ export function MainBody() {
     </main>
   )
 }
+  
