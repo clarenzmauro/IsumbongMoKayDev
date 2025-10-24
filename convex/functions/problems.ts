@@ -48,3 +48,12 @@ export const addProblem = mutation({
     return id;
   },
 });
+
+export const getProblemById = query({
+  args: { id: v.id("problems") },
+  handler: async (ctx, args) => {
+    const problem = await ctx.db.get(args.id);
+    if (!problem) throw new Error("Problem not found");
+    return problem;
+  },
+});
