@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Isumbong Mo Kay Devi",
+  title: "Isumbong Mo Kay Dev!",
   description: "Community issue reporting app",
 };
 
