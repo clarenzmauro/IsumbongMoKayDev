@@ -30,7 +30,7 @@ export default defineSchema({
     likes: v.optional(v.number()),
     dislikes: v.optional(v.number()),
     devsInterested: v.optional(v.number()),
-  }),
+  }).index("by_date", ["datePosted"]),
 
   // REACTIONS (likes/dislikes)
   problem_reactions: defineTable({

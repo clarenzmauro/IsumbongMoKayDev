@@ -3,6 +3,8 @@
 import { useState } from "react"
 import Image from "next/image"
 import { X, UploadCloud, Hash } from "lucide-react"
+import { useMutation } from "convex/react"
+import { api } from "@/convex/_generated/api"
 
 export function ProblemForm({ onClose }: { onClose: () => void }) {
   const [title, setTitle] = useState("")
@@ -12,6 +14,8 @@ export function ProblemForm({ onClose }: { onClose: () => void }) {
   const [tagsInput, setTagsInput] = useState("")
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const addProblem = useMutation(api.functions.problems.addProblem)
+  const generateUploadUrl = useMutation(api.files.generateUploadUrl)
 
   // Convert tags like "#Education #Community" → ["Education", "Community"]
   const parseTags = (text: string) =>
@@ -28,30 +32,53 @@ export function ProblemForm({ onClose }: { onClose: () => void }) {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
 
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setIsSubmitting(true)
+
+  try {
+    let coverImageUrl: string | undefined = undefined
+
+    // Step 1: Upload image to Convex Storage
+    if (coverImage) {
+      const uploadUrl = await generateUploadUrl();
+
+      // Upload the image file via fetch
+      const result = await fetch(uploadUrl, {
+        method: "POST",
+        headers: { "Content-Type": coverImage.type },
+        body: coverImage,
+      });
+
+      const { storageId } = await result.json();
+
+      // Get a public URL for preview/use
+      const imageUrl = `${process.env.NEXT_PUBLIC_CONVEX_URL}/api/storage/${storageId}`;
+      coverImageUrl = imageUrl;
+    }
+
+    // Step 2: Prepare tags and send to Convex
     const tags = parseTags(tagsInput)
-    const problemData = {
+    
+    await addProblem({
       title,
       description,
       location,
-      coverImage: coverImage ? coverImage.name : undefined,
+      coverImage: coverImageUrl,
       tags,
-      datePosted: new Date().toISOString(),
-      likes: 0,
-      dislikes: 0,
-      devsInterested: 0,
-    }
+    })
 
-    console.log("Problem submitted:", problemData)
-    // TODO: call Convex mutation here
-    // await addProblem(problemData)
-
-    setIsSubmitting(false)
+    console.log("✅ Problem submitted successfully.")
     onClose()
+  } catch (error) {
+    console.error("❌ Error submitting problem:", error)
+    alert("Failed to submit problem. Please try again.")
+  } finally {
+    setIsSubmitting(false)
   }
+}
+
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">

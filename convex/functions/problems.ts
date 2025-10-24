@@ -19,16 +19,23 @@ export const addProblem = mutation({
     title: v.string(),
     description: v.string(),
     coverImage: v.optional(v.string()),
-    userName: v.optional(v.string()),
-    userAvatar: v.optional(v.string()),
-    datePosted: v.string(),
     location: v.string(),
     tags: v.array(v.string()),
-    likes: v.optional(v.number()),
-    dislikes: v.optional(v.number()),
-    devsInterested: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert("problems", args);
+    const identity = await ctx.auth.getUserIdentity();
+
+    const problem = {
+      ...args,
+      userName: identity?.name ?? "Anonymous",
+      userAvatar: identity?.pictureUrl ?? "",
+      datePosted: new Date().toISOString(),
+      likes: 0,
+      dislikes: 0,
+      devsInterested: 0,
+    };
+
+    const id = await ctx.db.insert("problems", problem);
+    return id;
   },
 });
