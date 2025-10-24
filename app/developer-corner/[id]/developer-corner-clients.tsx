@@ -267,14 +267,16 @@ function CommentThread({
   return (
     <div>
       <div className="flex gap-3">
-        <Image
-          src={discussion.userAvatar || "https://i.pravatar.cc/40"}
-          alt={discussion.userName}
-          width={40}
-          height={40}
-          className="rounded-full"
-          unoptimized
-        />
+<div className="relative w-10 h-10 overflow-hidden rounded-full flex-shrink-0">
+  <Image
+    src={discussion.userAvatar || "https://i.pravatar.cc/40"}
+    alt={discussion.userName}
+    fill
+    className="object-cover"
+    sizes="40px"
+    unoptimized
+  />
+</div>
         <div>
           <p className="font-medium text-gray-800">{discussion.userName}</p>
           <p className="text-gray-600 text-sm">{discussion.message}</p>
@@ -319,14 +321,16 @@ function CommentThread({
           {replies.map((r) => (
             <div key={r._id} className="flex gap-3">
               <CornerDownRight size={14} className="text-gray-400 mt-2" />
+              <div className="relative w-10 h-10 overflow-hidden rounded-full flex-shrink-0">
               <Image
                 src={r.userAvatar || "https://i.pravatar.cc/40"}
                 alt={r.userName}
-                width={35}
-                height={35}
-                className="rounded-full"
+                fill
+                className="object-cover"
+                sizes="40px"
                 unoptimized
               />
+              </div>
               <div>
                 <p className="font-medium text-gray-800 text-sm">{r.userName}</p>
                 <p className="text-gray-600 text-sm">{r.message}</p>
