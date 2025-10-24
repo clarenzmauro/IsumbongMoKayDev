@@ -16,6 +16,7 @@ export function ProblemForm({ onClose }: { onClose: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const addProblem = useMutation(api.functions.problems.addProblem)
   const generateUploadUrl = useMutation(api.files.generateUploadUrl)
+  const storeFile = useMutation(api.files.storeFile)
 
   // Convert tags like "#Education #Community" → ["Education", "Community"]
   const parseTags = (text: string) =>
@@ -54,8 +55,8 @@ const handleSubmit = async (e: React.FormEvent) => {
       const { storageId } = await result.json();
 
       // Get a public URL for preview/use
-      const imageUrl = `${process.env.NEXT_PUBLIC_CONVEX_URL}/api/storage/${storageId}`;
-      coverImageUrl = imageUrl;
+      const { url } = await storeFile({ storageId });
+      coverImageUrl = url;
     }
 
     // Step 2: Prepare tags and send to Convex

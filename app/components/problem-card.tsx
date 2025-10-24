@@ -93,7 +93,13 @@ export function ProblemCard({
             <span>{userName}</span>
           </div>
           <div className="text-right">
-            <p>{datePosted}</p>
+            <p>
+              {new Date(datePosted).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
             <p className="text-xs">{location}</p>
           </div>
         </div>

@@ -1,77 +1,33 @@
 "use client"
+
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
 import { ProblemCard } from "./problem-card"
 
 export function MainBody() {
   const placeholderImage = "/assets/logo/cropped.png"
 
-  // 🧩 Temporary sample data
-  const problems = [
-    {
-      title: "Flooding in Barangay San Jose",
-      description:
-        "During the monsoon season, streets in Barangay San Jose are often submerged due to poor drainage systems. We need a sustainable and tech-based solution to mitigate flooding and improve safety.",
-      coverImage: "",
-      userName: "John Doe",
-      datePosted: "Oct 23, 2025",
-      location: "Batangas City",
-      tags: ["Environment", "Community", "Infrastructure"],
-      likes: 24,
-      dislikes: 3,
-      devsInterested: 7,
-    },
-    {
-      title: "Waste Segregation Awareness",
-      description:
-        "Many residents in our barangay still mix biodegradable and non-biodegradable waste. We need a system to raise awareness and track proper waste disposal.",
-      coverImage: "", // no image → will use placeholder
-      userName: "Anonymous",
-      datePosted: "Oct 21, 2025",
-      location: "Quezon City",
-      tags: ["Environment", "Awareness", "Education"],
-      likes: 10,
-      dislikes: 1,
-      devsInterested: 4,
-    },
-    {
-      title: "Traffic Congestion Near School Zone",
-      description:
-        "Heavy traffic occurs every morning near the local high school. Parents and students are often late. A traffic flow solution would be valuable.",
-      coverImage: "",
-      userName: "Maria Clara",
-      datePosted: "Oct 19, 2025",
-      location: "Manila",
-      tags: ["Transportation", "Community", "Safety"],
-      likes: 18,
-      dislikes: 2,
-      devsInterested: 5,
-    },
-        {
-      title: "Traffic Congestion Near School Zone",
-      description:
-        "Heavy traffic occurs every morning near the local high school. Parents and students are often late. A traffic flow solution would be valuable.",
-      coverImage: "",
-      userName: "Maria Clara",
-      datePosted: "Oct 19, 2025",
-      location: "Manila",
-      tags: ["Transportation", "Community", "Safety"],
-      likes: 18,
-      dislikes: 2,
-      devsInterested: 5,
-    },
-        {
-      title: "Traffic Congestion Near School Zone",
-      description:
-        "Heavy traffic occurs every morning near the local high school. Parents and students are often late. A traffic flow solution would be valuable.",
-      coverImage: "",
-      userName: "Maria Clara",
-      datePosted: "Oct 19, 2025",
-      location: "Manila",
-      tags: ["Transportation", "Community", "Safety"],
-      likes: 18,
-      dislikes: 2,
-      devsInterested: 5,
-    },
-  ]
+  const problems = useQuery(api.functions.problems.getAllProblems)
+
+  if (problems === undefined) {
+    return (
+      <main className="w-full bg-gray-100 py-24 px-6 md:px-12">
+        <div className="max-w-7xl mx-auto text-center text-gray-500">
+          Loading community problems...
+        </div>
+      </main>
+    )
+  }
+
+  if (problems.length === 0) {
+    return (
+      <main className="w-full bg-gray-100 py-24 px-6 md:px-12">
+        <div className="max-w-7xl mx-auto text-center text-gray-500">
+          No problems have been posted yet.
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main className="w-full bg-gray-100 py-24 px-6 md:px-12">
