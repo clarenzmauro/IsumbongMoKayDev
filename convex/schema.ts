@@ -22,6 +22,7 @@ export default defineSchema({
     title: v.string(),
     description: v.string(),
     coverImage: v.optional(v.string()),
+    userId: v.optional(v.id("users")),
     userName: v.optional(v.string()),
     userAvatar: v.optional(v.string()),
     datePosted: v.string(),
