@@ -6,6 +6,7 @@ import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
 import { Id } from "../../convex/_generated/dataModel";
+import { useRouter } from "next/navigation";
 
 interface ProblemCardProps {
   problemId: Id<"problems">;
@@ -37,14 +38,13 @@ export function ProblemCard({
   devsInterested = 0,
 }: ProblemCardProps) {
   const { user } = useUser();
+  const router = useRouter();
 
-  // Local UI state
   const [likeCount, setLikeCount] = useState(likes);
   const [dislikeCount, setDislikeCount] = useState(dislikes);
   const [devCount, setDevCount] = useState(devsInterested);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Convex Mutations
   const addOrUpdateReaction = useMutation(api.functions.reactions.addOrUpdateReaction);
   const toggleInterest = useMutation(api.functions.reactions.toggleInterest);
 
@@ -52,19 +52,11 @@ export function ProblemCard({
     if (!user) return alert("Please sign in to react.");
     if (loading) return;
     setLoading(true);
-
     try {
       const result = await addOrUpdateReaction({ problemId, type });
-
-      // ✅ Adjust frontend counters based on result from backend
       if (result?.success) {
-        if (type === "like") {
-          setLikeCount(result.likes ?? likeCount);
-          setDislikeCount(result.dislikes ?? dislikeCount);
-        } else {
-          setLikeCount(result.likes ?? likeCount);
-          setDislikeCount(result.dislikes ?? dislikeCount);
-        }
+        setLikeCount(result.likes ?? likeCount);
+        setDislikeCount(result.dislikes ?? dislikeCount);
       }
     } catch (err) {
       console.error("Reaction error:", err);
@@ -77,7 +69,6 @@ export function ProblemCard({
     if (!user) return alert("Please sign in to mark interest.");
     if (loading) return;
     setLoading(true);
-
     try {
       const result = await toggleInterest({ problemId });
       if (result?.success) {
@@ -95,8 +86,16 @@ export function ProblemCard({
     alert("🔗 Link copied to clipboard!");
   };
 
+  // ✅ navigate to /developer-corner/[id]
+  const handleCardClick = () => {
+    router.push(`/developer-corner/${problemId}`);
+  };
+
   return (
-    <div className="bg-white rounded-2xl shadow-md overflow-hidden w-full max-w-xl border border-gray-100">
+    <div
+      onClick={handleCardClick}
+      className="bg-white rounded-2xl shadow-md overflow-hidden w-full max-w-xl border border-gray-100 cursor-pointer transition-transform hover:scale-[1.01] active:scale-[0.99]"
+    >
       {/* Cover Image */}
       <div className="relative w-full h-56 bg-gray-100">
         {coverImage ? (
@@ -110,10 +109,7 @@ export function ProblemCard({
 
       {/* Content */}
       <div className="p-5 space-y-4">
-        {/* Title */}
         <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-
-        {/* Description */}
         <p className="text-gray-700 text-sm leading-relaxed">
           {description.length > 160 ? description.slice(0, 160) + "..." : description}
         </p>
@@ -161,7 +157,10 @@ export function ProblemCard({
         </div>
 
         {/* Interaction Buttons */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+        <div
+          className="flex items-center justify-between pt-4 border-t border-gray-100"
+          onClick={(e) => e.stopPropagation()} // ✅ prevent click from triggering navigation
+        >
           <div className="flex items-center space-x-4">
             <button
               onClick={() => handleReaction("like")}
