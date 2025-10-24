@@ -40,24 +40,30 @@ export function MainBody() {
         opacity: 0.95,
       }}
     >
-      {/* Semi-transparent overlay to keep text readable */}
+      {/* Semi-transparent overlay */}
       <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h3 className="text-3xl font-bold text-gray-900 tracking-wide">
+          <h3
+            className="text-3xl font-bold text-gray-900 tracking-wide"
+            style={{
+              textShadow: "0 0 2px rgba(0, 0, 0, 0.15)", // subtle dark shadow
+            }}
+          >
             Community Reported Problems
           </h3>
-          <p className="text-gray-900 mt-2">
+          <p className="text-gray-800 mt-2 text-lg md:text-xl">
             Explore issues raised by citizens and developers aiming to solve them.
           </p>
-          {/* Optional decorative divider */}
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-600 via-yellow-400 to-red-500 mx-auto mt-4 rounded-full" />
+
+          {/* Decorative color bar */}
+          <div className="w-24 h-1 bg-gradient-to-r from-blue-600 via-yellow-400 to-red-500 mx-auto mt-6 rounded-full" />
         </div>
 
         {/* Cards Grid */}
-        <div className="grid gap-6 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
+        <div className="grid gap-6 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 mt-8">
           {problems.map((problem, index) => (
             <ProblemCard
               key={index}
