@@ -32,6 +32,7 @@ export default defineSchema({
     devsInterested: v.optional(v.number()),
   }).index("by_date", ["datePosted"]),
 
+
   // REACTIONS (likes/dislikes)
   problem_reactions: defineTable({
     problemId: v.id("problems"),

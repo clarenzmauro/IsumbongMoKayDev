@@ -10,6 +10,7 @@
 
 import type * as files from "../files.js";
 import type * as functions_problems from "../functions/problems.js";
+import type * as functions_reactions from "../functions/reactions.js";
 import type * as functions_users from "../functions/users.js";
 
 import type {
@@ -29,6 +30,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   files: typeof files;
   "functions/problems": typeof functions_problems;
+  "functions/reactions": typeof functions_reactions;
   "functions/users": typeof functions_users;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
