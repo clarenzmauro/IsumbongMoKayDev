@@ -1,13 +1,12 @@
-"use client"
+"use client";
 
-import { useQuery } from "convex/react"
-import { api } from "@/convex/_generated/api"
-import { ProblemCard } from "./problem-card"
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { ProblemCard } from "./problem-card";
 
 export function MainBody() {
-  const placeholderImage = "/assets/logo/cropped.png"
-
-  const problems = useQuery(api.functions.problems.getAllProblems)
+  const placeholderImage = "/assets/logo/cropped.png";
+  const problems = useQuery(api.functions.problems.getAllProblems);
 
   if (problems === undefined) {
     return (
@@ -16,7 +15,7 @@ export function MainBody() {
           Loading community problems...
         </div>
       </main>
-    )
+    );
   }
 
   if (problems.length === 0) {
@@ -26,11 +25,11 @@ export function MainBody() {
           No problems have been posted yet.
         </div>
       </main>
-    )
+    );
   }
 
   return (
-    <main className="w-full bg-gray-100 py-24 px-6 md:px-12">
+    <main className="w-full bg-gray-100 py-24 px-4 sm:px-6 md:px-12">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
@@ -43,7 +42,7 @@ export function MainBody() {
         </div>
 
         {/* Cards Grid */}
-        <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
           {problems.map((problem, index) => (
             <ProblemCard
               key={index}
@@ -55,6 +54,5 @@ export function MainBody() {
         </div>
       </div>
     </main>
-  )
+  );
 }
-  
