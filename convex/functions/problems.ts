@@ -1,5 +1,6 @@
 import { query, mutation } from "../_generated/server";
 import { v } from "convex/values";
+import { Id } from "../_generated/dataModel";
 
 /**
  * Fetch all problems
@@ -12,7 +13,7 @@ export const getAllProblems = query({
 });
 
 /**
- * Add a new problem post
+ * Add a new problem post (allows anonymous users)
  */
 export const addProblem = mutation({
   args: {
@@ -24,24 +25,48 @@ export const addProblem = mutation({
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("User not authenticated");
 
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
-      .unique();
+    // Use `undefined` instead of `null`
+    let userId: Id<"users"> | undefined = undefined;
+    let userName = "Anonymous";
+    let userAvatar = "";
 
-    if (!user) throw new Error("User not found in database");
+    if (identity) {
+      const user = await ctx.db
+        .query("users")
+        .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
+        .unique();
 
-    const problem = {
-      userId: user._id,
-      userName: identity.name ?? "Anonymous",
-      userAvatar: identity.pictureUrl ?? "",
+      if (user) {
+        userId = user._id;
+        userName = identity.name ?? "Anonymous";
+        userAvatar = identity.pictureUrl ?? "";
+      }
+    }
+
+    // ✅ Explicitly build the object with only defined keys
+    const problem: {
+      coverImage?: string;
+      userId?: Id<"users">;
+      userName: string;
+      userAvatar: string;
+      title: string;
+      description: string;
+      location: string;
+      tags: string[];
+      datePosted: string;
+      likes: number;
+      dislikes: number;
+      devsInterested: number;
+    } = {
+      ...args,
+      ...(userId ? { userId } : {}), // only add userId if defined
+      userName,
+      userAvatar,
       datePosted: new Date().toISOString(),
       likes: 0,
       dislikes: 0,
       devsInterested: 0,
-      ...args,
     };
 
     const id = await ctx.db.insert("problems", problem);
@@ -49,6 +74,10 @@ export const addProblem = mutation({
   },
 });
 
+
+/**
+ * Fetch a single problem by ID
+ */
 export const getProblemById = query({
   args: { id: v.id("problems") },
   handler: async (ctx, args) => {
