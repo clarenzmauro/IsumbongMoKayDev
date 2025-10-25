@@ -41,7 +41,7 @@ export function MainBody() {
       }}
     >
       {/* Semi-transparent overlay */}
-      <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] pointer-events-none" />
+      <div className="absolute inset-0 bg-white/50 pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto">
         {/* Header */}

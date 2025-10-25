@@ -46,7 +46,7 @@ export function HeroSection() {
       </AnimatePresence>
 
       {/* Translucent Overlay */}
-      <div className="absolute inset-0 bg-black/70 sm:bg-black/60 backdrop-blur-[1px] z-10" />
+      <div className="absolute inset-0 bg-black/70 sm:bg-black/60 z-10" />
 
       {/* Text Content */}
       <div className="relative z-10 flex flex-col items-center justify-center text-center px-5">

@@ -15,8 +15,9 @@ export function Header() {
           <div className="hidden sm:block relative w-80 h-full">
             <Image
               src="/assets/logo/logo-line.png"
-              alt="Isumbong Mo Kay Devi Logo"
+              alt="Isumbong Mo Kay Dev Logo"
               fill
+              sizes="(max-width: 640px) 100vw, 320px"
               className="object-contain"
               priority
             />
@@ -26,8 +27,9 @@ export function Header() {
           <div className="block sm:hidden relative w-12 h-12">
             <Image
               src="/assets/logo/cropped-transparent.png"
-              alt="Isumbong Mo Kay Devi Logo (Mobile)"
+              alt="Isumbong Mo Kay Dev Logo (Mobile)"
               fill
+              sizes="(max-width: 640px) 100vw, 48px"
               className="object-contain"
               priority
             />
